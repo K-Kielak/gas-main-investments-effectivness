@@ -1,0 +1,8 @@
+# pycharm files
+.idea/
+
+# compiled files
+__pycache__/
+
+# virtual environment
+venv/
