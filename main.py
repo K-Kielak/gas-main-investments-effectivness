@@ -6,8 +6,28 @@ DATA_PATH = './data.txt'
 FEATURES = ('Diameter', 'Model', 'Year', '?')
 OUTPUTS = ('Price',)
 
-features = []
-labels = []
+
+def normalize_data(data, min_bound=-1, max_bound=1):
+    """
+    Normalizes data.
+    :param data: 1D collection to normalize.
+    :param min_bound: Minimal bound for the data normalization.
+    :param max_bound: Maximal bound for the data normalization.
+    :return: Normalized data in between min_bound and max_bound, in the same format as input data.
+    """
+    if min_bound >= max_bound:
+        raise ValueError('Minimal bound ({}) can\'t be lower than maximal bound ({})'.format(min_bound, max_bound))
+
+    bound_range = max_bound - min_bound
+    min_value = min(data)
+    max_value = max(data)
+    data_range = max_value - min_value
+    scale_coefficient = bound_range / data_range
+    mean_change = min_bound - (min_value * scale_coefficient)
+    return [scale_coefficient*value + mean_change for value in data]
+
+
+data = []
 with open(DATA_PATH, 'r') as data_file:
     for line in data_file.readlines():
         datapoint = line.strip().split(';')
@@ -16,8 +36,9 @@ with open(DATA_PATH, 'r') as data_file:
                           'It contains {} values, whereas properties specified {} values.'
                           .format(len(datapoint), len(FEATURES) + len(OUTPUTS)))
 
-        features.append(np.array(datapoint[:len(FEATURES)], dtype=USED_DTYPE))
-        labels.append(np.array(datapoint[len(FEATURES):], dtype=USED_DTYPE))
+        data.append(datapoint)
 
-print(features)
-print(labels)
+data = np.array(data, dtype=USED_DTYPE)
+data = np.array([normalize_data(column) for column in data.T]).T
+
+print(data)
