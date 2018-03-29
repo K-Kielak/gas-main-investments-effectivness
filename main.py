@@ -1,4 +1,6 @@
 import numpy as np
+import tensorflow as tf
+from linear_regression import LinearRegression
 
 
 DATA_PATH = './data.txt'
@@ -7,6 +9,7 @@ OUTPUTS = ('Price',)
 
 USED_DTYPE = np.float64
 TEST_DATA_SIZE = 0.15  # What part of the whole data should be set aside for testing
+TRAIN_STEPS = 1000  # How many train steps to perform, at the moment each train step uses whole training data
 
 
 def get_test_train_data(data, test_size):
@@ -64,11 +67,13 @@ labels = data[len(FEATURES):].T
 test_inputs, train_inputs = get_test_train_data(inputs, TEST_DATA_SIZE)
 test_labels, train_labels = get_test_train_data(labels, TEST_DATA_SIZE)
 
-print('test inputs')
-print(test_inputs)
-print('test labels')
-print(test_labels)
-print('train inputs')
-print(train_inputs)
-print('train_labels')
-print(train_labels)
+linear_regression = LinearRegression(len(FEATURES), len(OUTPUTS), name='linear_regression', dtype=USED_DTYPE)
+with tf.Session() as sess:
+    sess.run(tf.global_variables_initializer())
+    for i in range(0, TRAIN_STEPS):
+        print('Step {} out of {}'.format(i + 1, TRAIN_STEPS))
+        linear_regression.train(train_inputs, train_labels, sess)
+        train_loss = linear_regression.calculate_loss(train_inputs, train_labels, sess)
+        test_loss = linear_regression.calculate_loss(test_inputs, test_labels, sess)
+        print('Training loss: ' + str(train_loss))
+        print('Testing loss ' + str(test_loss))

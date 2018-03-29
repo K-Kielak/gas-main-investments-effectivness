@@ -5,7 +5,7 @@ class LinearRegression(object):
     def __init__(self, features_num, outputs_num, name=None, dtype=tf.float64):
         with tf.name_scope(name):
             self._inputs = tf.placeholder(shape=[None, features_num], name='inputs', dtype=dtype)
-            self._labels = tf.placeholder(shape=[None], name='labels', dtype=dtype)
+            self._labels = tf.placeholder(shape=[None, outputs_num], name='labels', dtype=dtype)
 
             weights = tf.Variable(tf.truncated_normal([features_num, outputs_num], stddev=0.1, dtype=dtype),
                                   name='weights')
@@ -19,7 +19,7 @@ class LinearRegression(object):
             self._train_step = tf.train.AdamOptimizer().minimize(self._loss)
 
     def train(self, inputs, labels, session):
-        session.run(self._train_step, feed_dict={
+        session.run([self._loss, self._train_step], feed_dict={
             self._inputs: inputs,
             self._labels: labels
         })
