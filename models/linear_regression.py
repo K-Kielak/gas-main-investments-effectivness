@@ -1,3 +1,4 @@
+import numpy as np
 import tensorflow as tf
 
 
@@ -8,11 +9,11 @@ class LinearRegression(object):
             self._inputs = tf.placeholder(shape=[None, features_num], name='inputs', dtype=dtype)
             self._labels = tf.placeholder(shape=[None, outputs_num], name='labels', dtype=dtype)
 
-            weights = tf.Variable(tf.truncated_normal([features_num, outputs_num], stddev=0.1, dtype=dtype),
-                                  name='weights')
-            biases = tf.Variable(tf.truncated_normal([outputs_num], stddev=0.1, mean=0.2, dtype=dtype),
-                                 name='biases')
-            self._outputs = tf.matmul(self._inputs, weights) + biases
+            self._weights = tf.Variable(tf.truncated_normal([features_num, outputs_num], stddev=0.1, dtype=dtype),
+                                        name='weights')
+            self._biases = tf.Variable(tf.truncated_normal([outputs_num], stddev=0.1, mean=0.2, dtype=dtype),
+                                       name='biases')
+            self._outputs = tf.matmul(self._inputs, self._weights) + self._biases
             self._average_distance = tf.reduce_mean(tf.abs(self._outputs - self._labels))
 
             square_errors = tf.square(self._outputs - self._labels)
@@ -24,6 +25,20 @@ class LinearRegression(object):
             self._inputs: inputs,
             self._labels: labels
         })
+
+    def solve(self, inputs, labels, sess):
+        inputs_num = len(inputs)
+        bias_input = np.ones([inputs_num, 1])
+        inputs = np.append(bias_input, inputs, axis=1)
+        solved_parameters = np.linalg.inv(np.matmul(inputs.T, inputs))  # (X^t * X)^-1
+        solved_parameters = np.matmul(solved_parameters, inputs.T)  # (X^t * X)^-1 * X^t
+        solved_parameters = np.matmul(solved_parameters, labels)  # (X^t * X)^-1 * X^t * y
+        solved_biases = solved_parameters[0]
+        solved_weights = solved_parameters[1:]
+
+        # assign solved parameters
+        sess.run(self._biases.assign(solved_biases))
+        sess.run(self._weights.assign(solved_weights))
 
     def calculate_average_distance(self, inputs, labels, session):
         return session.run(self._average_distance, feed_dict={

@@ -68,8 +68,11 @@ labels = data[len(FEATURES):].T
 test_inputs, train_inputs = get_test_train_data(inputs, TEST_DATA_SIZE)
 test_labels, train_labels = get_test_train_data(labels, TEST_DATA_SIZE)
 
-models = (
+solvable_models = (
     LinearRegression(len(FEATURES), len(OUTPUTS), name='linear_regression', dtype=USED_DTYPE),
+)
+
+training_models = (
     FeedforwardNN(len(FEATURES), [720], len(OUTPUTS), activation=tf.nn.leaky_relu,
                   is_regression=True, name='overfitting_feedforward', dtype=USED_DTYPE),
     FeedforwardNN(len(FEATURES), [90], len(OUTPUTS), activation=tf.nn.relu,
@@ -94,8 +97,21 @@ models = (
 
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
+    # Solve solvable models
+    for model in solvable_models:
+        train_loss = model.calculate_average_distance(train_inputs, train_labels, sess)
+        test_loss = model.calculate_average_distance(test_inputs, test_labels, sess)
+        print('Training distance with {} before solving: {}'.format(model.name, train_loss))
+        print('Testing distance with {} before solving: {}'.format(model.name, test_loss))
+        model.solve(train_inputs, train_labels, sess)
+        train_loss = model.calculate_average_distance(train_inputs, train_labels, sess)
+        test_loss = model.calculate_average_distance(test_inputs, test_labels, sess)
+        print('Training distance with {} after solving: {}'.format(model.name, train_loss))
+        print('Testing distance with {} after solving: {}'.format(model.name, test_loss))
+
+    # Start training on trainable models
     for i in range(0, TRAIN_STEPS):
-        for model in models:
+        for model in training_models:
             if i % LOGGING_FREQUENCY == 0:
                 train_loss = model.calculate_average_distance(train_inputs, train_labels, sess)
                 test_loss = model.calculate_average_distance(test_inputs, test_labels, sess)
