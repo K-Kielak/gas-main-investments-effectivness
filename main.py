@@ -9,7 +9,8 @@ OUTPUTS = ('Price',)
 
 USED_DTYPE = np.float64
 TEST_DATA_SIZE = 0.15  # What part of the whole data should be set aside for testing
-TRAIN_STEPS = 10000  # How many train steps to perform, at the moment each train step uses whole training data
+TRAIN_STEPS = 100000  # How many train steps to perform, at the moment each train step uses whole training data
+LOGGING_FREQUENCY = 10000  # How often to log training data
 
 
 def get_test_train_data(data, test_size):
@@ -27,7 +28,7 @@ def get_test_train_data(data, test_size):
     return test_data, train_data
 
 
-def normalize_data(data, min_bound=0, max_bound=1):
+def normalize_data(data, min_bound=0, max_bound=100):
     """
     Normalizes data.
     :param data: 1D collection to normalize.
@@ -69,6 +70,8 @@ test_labels, train_labels = get_test_train_data(labels, TEST_DATA_SIZE)
 
 models = (
     LinearRegression(len(FEATURES), len(OUTPUTS), name='linear_regression', dtype=USED_DTYPE),
+    FeedforwardNN(len(FEATURES), [720], len(OUTPUTS), activation=tf.nn.leaky_relu,
+                  is_regression=True, name='overfitting_feedforward', dtype=USED_DTYPE),
     FeedforwardNN(len(FEATURES), [90], len(OUTPUTS), activation=tf.nn.relu,
                   is_regression=True, name='feedforwad_nn_90_relu', dtype=USED_DTYPE),
     FeedforwardNN(len(FEATURES), [45], len(OUTPUTS), activation=tf.nn.relu,
@@ -92,10 +95,12 @@ models = (
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     for i in range(0, TRAIN_STEPS):
-        print('Step {} out of {}'.format(i, TRAIN_STEPS))
         for model in models:
-            train_loss = model.calculate_average_distance(train_inputs, train_labels, sess)
-            test_loss = model.calculate_average_distance(test_inputs, test_labels, sess)
+            if i % LOGGING_FREQUENCY == 0:
+                train_loss = model.calculate_average_distance(train_inputs, train_labels, sess)
+                test_loss = model.calculate_average_distance(test_inputs, test_labels, sess)
+                print('Step {} out of {}'.format(i, TRAIN_STEPS))
+                print('Training distance with {}: {}'.format(model.name, train_loss))
+                print('Testing distance with {}: {}'.format(model.name, test_loss))
+
             model.train(train_inputs, train_labels, sess)
-            print('Training distance with {}: {}'.format(model.name, train_loss))
-            print('Testing distance with {}: {}'.format(model.name, test_loss))

@@ -19,7 +19,7 @@ class FeedforwardNN:
                 errors = tf.nn.sigmoid_cross_entropy_with_logits(self._outputs, self._labels)
                 self._outputs = tf.nn.sigmoid(self._outputs)
 
-            self._loss = tf.reduce_mean(errors)
+            self._loss = tf.reduce_sum(errors)
             self._train_step = tf.train.AdamOptimizer().minimize(self._loss)
 
     def train(self, inputs, labels, session):

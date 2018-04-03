@@ -16,7 +16,7 @@ class LinearRegression(object):
             self._average_distance = tf.reduce_mean(tf.abs(self._outputs - self._labels))
 
             square_errors = tf.square(self._outputs - self._labels)
-            loss = tf.reduce_mean(square_errors)
+            loss = tf.reduce_sum(square_errors)
             self._train_step = tf.train.AdamOptimizer().minimize(loss)
 
     def train(self, inputs, labels, session):
