@@ -11,9 +11,9 @@ def get_test_train_data(data, test_size):
     data_copy = data[:]  # copy to avoid mutation of data parameter and make the whole method immutable
     np.random.shuffle(data_copy)
     test_end_index = int(test_size * len(data))
-    test_data = data_copy[:test_end_index]
     train_data = data_copy[test_end_index:]
-    return test_data, train_data
+    test_data = data_copy[:test_end_index]
+    return train_data, test_data
 
 
 def normalize_data(data, min_bound=0, max_bound=100):

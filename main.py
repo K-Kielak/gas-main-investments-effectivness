@@ -53,12 +53,13 @@ with open(DATA_PATH, 'r') as data_file:
 
 # Prepare data
 data = np.array(data, dtype=USED_DTYPE)
-data = np.array([normalize_data(column) for column in data.T])
-inputs = data[:len(FEATURES)].T
-labels = data[len(FEATURES):].T
+data = np.array([normalize_data(column) for column in data.T]).T
+train_data, test_data = get_test_train_data(data, TEST_DATA_SIZE)
 
-test_inputs, train_inputs = get_test_train_data(inputs, TEST_DATA_SIZE)
-test_labels, train_labels = get_test_train_data(labels, TEST_DATA_SIZE)
+train_inputs = train_data[:, :len(FEATURES)]
+train_labels = train_data[:, len(FEATURES):]
+test_inputs = test_data[:, :len(FEATURES)]
+test_labels = test_data[:, len(FEATURES):]
 
 # Start training
 with tf.Session() as sess:
