@@ -2,7 +2,7 @@ import numpy as np
 import tensorflow as tf
 from models.feedforward_nn import FeedforwardNN
 from models.linear_regression import LinearRegression
-from preprocessing import get_test_train_data, normalize_data
+from preprocessing import get_test_train_data, normalize_train_test_data
 
 DATA_PATH = './data.txt'
 FEATURES = ('Diameter', 'Model', 'Year', '?')
@@ -10,12 +10,13 @@ OUTPUTS = ('Price',)
 
 USED_DTYPE = np.float64
 TEST_DATA_SIZE = 0.15  # What part of the whole data should be set aside for testing
-TRAIN_STEPS = 100000  # How many train steps to perform, at the moment each train step uses whole training data
+TRAIN_STEPS = 500000  # How many train steps to perform, at the moment each train step uses whole training data
 LOGGING_FREQUENCY = 10000  # How often to log training data
 
 SOLVABLE_MODELS = (
     LinearRegression(len(FEATURES), len(OUTPUTS), name='linear_regression', dtype=USED_DTYPE),
 )
+
 TRAINING_MODELS = (
     FeedforwardNN(len(FEATURES), [720], len(OUTPUTS), activation=tf.nn.leaky_relu,
                   is_regression=True, name='overfitting_feedforward', dtype=USED_DTYPE),
@@ -53,8 +54,8 @@ with open(DATA_PATH, 'r') as data_file:
 
 # Prepare data
 data = np.array(data, dtype=USED_DTYPE)
-data = np.array([normalize_data(column) for column in data.T]).T
 train_data, test_data = get_test_train_data(data, TEST_DATA_SIZE)
+train_data, test_data, normalization_parameters = normalize_train_test_data(train_data, test_data)
 
 train_inputs = train_data[:, :len(FEATURES)]
 train_labels = train_data[:, len(FEATURES):]
