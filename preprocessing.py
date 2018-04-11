@@ -1,4 +1,7 @@
+import itertools
+import operator
 import numpy as np
+from functools import reduce
 
 
 def get_test_train_data(data, test_size):
@@ -14,6 +17,23 @@ def get_test_train_data(data, test_size):
     train_data = data_copy[test_end_index:]
     test_data = data_copy[:test_end_index]
     return train_data, test_data
+
+
+def expand_to_polynomial(data, degree):
+    """
+    Expands given data to the polynomial degree of correlations (e.g. [x1, x2] to [x1, x2, x1^2, x1*x2, x2^2]).
+    :param data: Matrix of data to expand, each row should be a separate data point.
+    :param degree: Polynomial degree to which the data should be expanded.
+    :return: Numpy array of expanded data.
+    """
+    expanded_data = [[] for _ in data]
+    for d in range(1, degree+1):
+        for i, row in enumerate(data):
+            combinations = itertools.combinations_with_replacement(row, d)
+            polynomials = [reduce(operator.mul, combination) for combination in combinations]
+            expanded_data[i].extend(polynomials)
+
+    return np.array(expanded_data)
 
 
 def normalize_train_test_data(train, test):
@@ -65,3 +85,4 @@ def normalize_data_vector(data, scale_coefficient=None, mean_change=None):
         mean_change = (min_value * scale_coefficient)
 
     return [scale_coefficient*value - mean_change for value in data], scale_coefficient, mean_change
+
