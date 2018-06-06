@@ -49,12 +49,6 @@ SOLVABLE_MODELS = (
                      name='cubic_regression', dtype=USED_DTYPE)
 )
 
-# Each solvable model has to have associated it's own features (due to polynomial regressions etc.).
-# Make sure read data is transformed appropriately and added to this array for each of the solvable
-# models as a tuples (train_data, test_data)
-data_for_solvables = []
-
-
 # Read data
 data = []
 with open(DATA_PATH, 'r') as data_file:
@@ -77,8 +71,13 @@ train_labels = train_data[:, len(FEATURES):]
 test_inputs = test_data[:, :len(FEATURES)]
 test_labels = test_data[:, len(FEATURES):]
 
+# Each solvable model has to have associated it's own features (due to polynomial regressions etc.).
+# Make sure read data is transformed appropriately and added to this array for each of the solvable
+# models as a tuples (train_data, test_data)
+data_for_solvables = []
 data_for_solvables.append((train_inputs, test_inputs))
 data_for_solvables.append((expand_to_polynomial(train_inputs, 2), expand_to_polynomial(test_inputs, 2)))
+data_for_solvables.append((expand_to_polynomial(train_inputs, 3), expand_to_polynomial(test_inputs, 3)))
 
 # Start training
 with tf.Session() as sess:
@@ -87,8 +86,8 @@ with tf.Session() as sess:
     for i, model in enumerate(SOLVABLE_MODELS):
         train_loss = model.calculate_average_distance(data_for_solvables[i][0], train_labels, sess)
         test_loss = model.calculate_average_distance(data_for_solvables[i][1], test_labels, sess)
-        print('Training distance with {} before solving: {}'.format(model.name, train_loss))
-        print('Testing distance with {} before solving: {}'.format(model.name, test_loss))
+        print('Train distance with {} before solving: {}'.format(model.name, train_loss))
+        print('Test distance with {} before solving: {}'.format(model.name, test_loss))
         model.solve(data_for_solvables[i][0], train_labels, sess)
         train_loss = model.calculate_average_distance(data_for_solvables[i][0], train_labels, sess)
         test_loss = model.calculate_average_distance(data_for_solvables[i][1], test_labels, sess)
@@ -102,7 +101,7 @@ with tf.Session() as sess:
                 train_loss = model.calculate_average_distance(train_inputs, train_labels, sess)
                 test_loss = model.calculate_average_distance(test_inputs, test_labels, sess)
                 print('Step {} out of {}'.format(i, TRAIN_STEPS))
-                print('Training distance with {}: {}'.format(model.name, train_loss))
-                print('Testing distance with {}: {}'.format(model.name, test_loss))
+                print('Train distance with {}: {}'.format(model.name, train_loss))
+                print('Test distance with {}: {}'.format(model.name, test_loss))
 
             model.train(train_inputs, train_labels, sess)
