@@ -1,8 +1,41 @@
 import itertools
+import math
 import operator
 from functools import reduce
 
 import numpy as np
+
+
+def center_output_around(datasets, central_point_features):
+    """
+    Subtracts the output value of the most central point from all
+    of the points for each dataset.
+    :param datasets: key:dataset pairs (dict).
+    :param central_point_features: Features defining the most central
+    point for all datasets. Output of the point with features closest
+    to the central point will be used for subtraction in each dataset.
+    :return: The list of all centered datasets concatenated together.
+    """
+    features_len = len(central_point_features)
+    centered_dataset = []
+    for dset in datasets.values():
+        features = [datapoint[:features_len] for datapoint in dset]
+        outputs = [datapoint[features_len:] for datapoint in dset]
+        most_central_point \
+            = min(features, key=lambda x: distance(x, central_point_features))
+        central_point_index = features.index(most_central_point)
+        central_output = outputs[central_point_index]
+        centered_outputs = [list(map(operator.sub, out, central_output))
+                            for out in outputs]
+        centered_dset = [f + o for f, o in zip(features, centered_outputs)]
+        centered_dataset.extend(centered_dset)
+
+    return centered_dataset
+
+
+def distance(xs, ys):
+    square_diffs = sum([(x - y)**2 for x, y in zip(xs, ys)])
+    return math.sqrt(square_diffs)
 
 
 def get_test_train_data(data, test_size):

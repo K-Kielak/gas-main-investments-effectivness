@@ -1,4 +1,5 @@
 import itertools
+from collections import defaultdict
 
 import numpy as np
 import tensorflow as tf
@@ -6,7 +7,7 @@ import tensorflow as tf
 from gmie.config import *
 from gmie.models.feedforward_nn import FeedforwardNN
 from gmie.models.linear_regression import LinearRegression
-from gmie.preprocessing import get_test_train_data, normalize_train_test_data, expand_to_polynomial
+from gmie.preprocessing import *
 
 
 TRAINING_MODELS = (
@@ -45,11 +46,12 @@ SOLVABLE_MODELS = (
 )
 
 # Read data
-data = []
+datasets = defaultdict(list)
 with open(DATA_PATH, 'r') as data_file:
     for line in data_file.readlines():
-        datapoint = line.strip().split(';')
-        del datapoint[2]
+        date, *datapoint = line.strip().split(';')
+        datapoint = [float(d) for d in datapoint]
+
         if len(datapoint) != len(FEATURES) + len(OUTPUTS):
             raise IOError(f"Data in the data file doesn't match with "
                           f"specified data properties. It contains "
@@ -57,9 +59,11 @@ with open(DATA_PATH, 'r') as data_file:
                           f"properties specified "
                           f"{len(FEATURES) + len(OUTPUTS)} values.")
 
-        data.append(datapoint)
+        datasets[date].append(datapoint)
+
 
 # Prepare data
+data = center_output_around(datasets, CENTRAL_DATAPOINT)
 data = np.array(data, dtype=DTYPE)
 train_data, test_data = get_test_train_data(data, TEST_DATA_SIZE)
 train_data, test_data, norm_parameters = normalize_train_test_data(train_data,

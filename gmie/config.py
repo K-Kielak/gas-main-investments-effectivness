@@ -8,6 +8,8 @@ PROJECT_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 # DATA CONFIG
 # Absolute path to the data file.
 DATA_PATH = os.path.join(PROJECT_ROOT, 'data.txt')
+# Towards what datapoint data for all dates should be centered around
+CENTRAL_DATAPOINT = (700, 0, 0)
 # What features program should expect to find in the data file.
 FEATURES = ('Diameter', 'Model', '?')
 INPUT_SIZE = [len(FEATURES)]
