@@ -13,9 +13,10 @@ class PolynomialRegression(MLModel):
         self._degree = degree
 
         # Initialize the model
-        self._weights = initialize_weights([input_size, output_size],
-                                           dtype=dtype)
-        self._biases = initialize_biases([output_size], dtype=dtype)
+        with tf.name_scope(name):
+            self._weights = initialize_weights([input_size, output_size],
+                                               dtype=dtype)
+            self._biases = initialize_biases([output_size], dtype=dtype)
 
         self._output = tf.matmul(self._inputs, self._weights) + self._biases
 

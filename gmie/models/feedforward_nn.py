@@ -10,10 +10,11 @@ class FeedforwardNN(MLModel):
                          name=name, dtype=dtype)
 
         # Model the network
-        self._weights, self._biases = _set_up_parameters(network_shape,
-                                                         dtype=dtype)
-        self._output = _model_output(self._inputs, self._weights,
-                                     self._biases, activation=activation)
+        with tf.name_scope(name):
+            self._weights, self._biases = _set_up_parameters(network_shape,
+                                                             dtype=dtype)
+            self._output = _model_output(self._inputs, self._weights,
+                                         self._biases, activation=activation)
 
         # Calculate absolute distance for logging purposes
         distances = tf.abs(self._output - self._labels)

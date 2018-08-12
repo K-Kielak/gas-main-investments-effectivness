@@ -30,6 +30,7 @@ TRAIN_STEPS = 50000
 # How often to log training data
 LOGGING_FREQUENCY = 10000
 DTYPE = np.float32
+SAVE_DIR = os.path.join(PROJECT_ROOT, 'saved-models')
 
 
 # MODELS CONFIG

@@ -12,6 +12,11 @@ def main():
     train_inputs, train_labels, test_inputs, test_labels = \
         prepare_data(datasets)
 
+    collections = [(model.name,
+                    tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=model.name))
+                   for model in (TRAINING_MODELS + SOLVABLE_MODELS)]
+    savers = [(name, tf.train.Saver(var_list=coll))
+              for name, coll in collections]
     # Start training
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
@@ -51,6 +56,9 @@ def main():
                     print(f'Test distance with {model.name}: {test_loss}')
 
                 model.train(train_inputs, train_labels, sess)
+
+        # Save models
+        [s.save(sess, os.path.join(SAVE_DIR, name)) for name, s in savers]
 
 
 def prepare_data(datasets):
