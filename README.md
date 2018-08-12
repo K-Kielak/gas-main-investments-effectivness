@@ -1,5 +1,5 @@
-# Gas Main Investments Effectivness
-Research project looking into the effectivness of gas main investments in Poland. 
+# Gas Main Investments Effectiveness
+Research project looking into the effectiveness of gas main investments in Poland. 
 
 It consists of different machine learning models that calculate the expected prices of different types of gas mains
 relatively to the most standard model (see `config.py`) based on the provided training data.
@@ -11,6 +11,6 @@ datapoint should be in separate row. Datapoint collection year is used to group 
 from the same year and center them around the standard yearly datapoint to avoid influence of different geopolitical 
 and economic factors (e.g. trade deals or inflation) that are beyond the simple gas mains data.
 
-To configure the training process change appropiate data and models configuration in the `config.py` file.
+To configure the training process change appropriate data and models configuration in the `config.py` file.
 
 To run the training for specified models and specified configuration simply run the `main.py` script.
