@@ -1,6 +1,10 @@
 import os
 
 import numpy as np
+import tensorflow as tf
+
+from gmie.models.feedforward_nn import FeedforwardNN
+from gmie.models.polynomial_regression import PolynomialRegression
 
 
 PROJECT_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
@@ -17,7 +21,7 @@ INPUT_SIZE = [len(FEATURES)]
 OUTPUTS = ('Price',)
 OUTPUT_SIZE = [len(OUTPUTS)]
 
-# MACHINE LEARNING MODELS CONFIG
+# TRAINING CONFIG
 # What part of the data should be set aside for testing
 TEST_DATA_SIZE = 0.15
 # How many training steps should be performed.
@@ -26,3 +30,17 @@ TRAIN_STEPS = 50000
 # How often to log training data
 LOGGING_FREQUENCY = 10000
 DTYPE = np.float32
+
+
+# MODELS CONFIG
+# Trainable models to use
+TRAINING_MODELS = (
+    FeedforwardNN(INPUT_SIZE + [18] + OUTPUT_SIZE, activation=tf.nn.leaky_relu,
+                  name='feedforwad_nn_18_lrelu', dtype=DTYPE),
+)
+
+# Solvable models to use
+SOLVABLE_MODELS = (
+    PolynomialRegression(len(FEATURES), len(OUTPUTS), degree=2,
+                         name='quadratic_regression', dtype=DTYPE),
+)

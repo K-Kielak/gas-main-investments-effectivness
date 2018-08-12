@@ -5,20 +5,8 @@ import numpy as np
 import tensorflow as tf
 
 from gmie.config import *
-from gmie.models.feedforward_nn import FeedforwardNN
-from gmie.models.polynomial_regression import PolynomialRegression
 from gmie.preprocessing import *
 
-
-TRAINING_MODELS = (
-    FeedforwardNN(INPUT_SIZE + [18] + OUTPUT_SIZE, activation=tf.nn.leaky_relu,
-                  name='feedforwad_nn_18_lrelu', dtype=DTYPE),
-)
-
-SOLVABLE_MODELS = (
-    PolynomialRegression(len(FEATURES), len(OUTPUTS), degree=2,
-                         name='quadratic_regression', dtype=DTYPE),
-)
 
 # Read data
 datasets = defaultdict(list)
