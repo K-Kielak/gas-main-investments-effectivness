@@ -22,7 +22,7 @@ OUTPUT_SIZE = [len(OUTPUTS)]
 TEST_DATA_SIZE = 0.15
 # How many training steps should be performed.
 # Each train step models use whole training data.
-TRAIN_STEPS = 500000
+TRAIN_STEPS = 50000
 # How often to log training data
 LOGGING_FREQUENCY = 10000
 DTYPE = np.float32

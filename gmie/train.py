@@ -11,38 +11,15 @@ from gmie.preprocessing import *
 
 
 TRAINING_MODELS = (
-    FeedforwardNN(INPUT_SIZE + [720] + OUTPUT_SIZE, activation=tf.nn.leaky_relu,
-                  name='overfitting_feedforward', dtype=DTYPE),
-    FeedforwardNN(INPUT_SIZE + [90] + OUTPUT_SIZE, activation=tf.nn.relu,
-                  name='feedforwad_nn_90_relu', dtype=DTYPE),
-    FeedforwardNN(INPUT_SIZE + [45] + OUTPUT_SIZE, activation=tf.nn.relu,
-                  name='feedforwad_nn_45_relu', dtype=DTYPE),
-    FeedforwardNN(INPUT_SIZE + [18] + OUTPUT_SIZE, activation=tf.nn.relu,
-                  name='feedforwad_nn_18_relu', dtype=DTYPE),
-    FeedforwardNN(INPUT_SIZE + [90] + OUTPUT_SIZE, activation=tf.nn.leaky_relu,
-                  name='feedforwad_nn_90_lrelu', dtype=DTYPE),
-    FeedforwardNN(INPUT_SIZE + [45] + OUTPUT_SIZE, activation=tf.nn.leaky_relu,
-                  name='feedforwad_nn_45_lrelu', dtype=DTYPE),
     FeedforwardNN(INPUT_SIZE + [18] + OUTPUT_SIZE, activation=tf.nn.leaky_relu,
                   name='feedforwad_nn_18_lrelu', dtype=DTYPE),
-    FeedforwardNN(INPUT_SIZE + [90] + OUTPUT_SIZE, activation=tf.nn.leaky_relu,
-                  name='feedforwad_nn_90_sigmoid', dtype=DTYPE),
-    FeedforwardNN(INPUT_SIZE + [45] + OUTPUT_SIZE, activation=tf.nn.leaky_relu,
-                  name='feedforwad_nn_45_sigmoid', dtype=DTYPE),
-    FeedforwardNN(INPUT_SIZE + [18] + OUTPUT_SIZE, activation=tf.nn.leaky_relu,
-                  name='feedforwad_nn_18_sigmoid', dtype=DTYPE)
 )
 
 quadratic_features = list(itertools.combinations_with_replacement(FEATURES, 2))
-cubic_features = list(itertools.combinations_with_replacement(FEATURES, 3))
 
 SOLVABLE_MODELS = (
-    LinearRegression(len(FEATURES), len(OUTPUTS),
-                     name='linear_regression', dtype=DTYPE),
     LinearRegression(len(FEATURES) + len(quadratic_features), len(OUTPUTS),
                      name='quadratic_regression', dtype=DTYPE),
-    LinearRegression(len(FEATURES) + len(quadratic_features) + len(cubic_features),
-                     len(OUTPUTS), name='cubic_regression', dtype=DTYPE)
 )
 
 # Read data
@@ -79,11 +56,8 @@ test_labels = test_data[:, len(FEATURES):]
 # transformed appropriately and added to this array for each
 # of the solvable models as a tuples (train_data, test_data)
 data_for_solvables = [
-    (train_inputs, test_inputs),
     (expand_to_polynomial(train_inputs, 2),
      expand_to_polynomial(test_inputs, 2)),
-    (expand_to_polynomial(train_inputs, 3),
-     expand_to_polynomial(test_inputs, 3))
 ]
 
 # Start training
@@ -106,7 +80,7 @@ with tf.Session() as sess:
         print(f'Test distance with {model.name} after solving: {test_loss}')
 
     # Start training on trainable models
-    for i in range(0, TRAIN_STEPS):
+    for i in range(0, TRAIN_STEPS + 1):
         for model in TRAINING_MODELS:
             if i % LOGGING_FREQUENCY == 0:
                 train_loss = model.calculate_average_distance(train_inputs,
