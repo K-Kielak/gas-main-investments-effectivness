@@ -6,7 +6,7 @@ import tensorflow as tf
 
 from gmie.config import *
 from gmie.models.feedforward_nn import FeedforwardNN
-from gmie.models.linear_regression import LinearRegression
+from gmie.models.polynomial_regression import PolynomialRegression
 from gmie.preprocessing import *
 
 
@@ -15,11 +15,9 @@ TRAINING_MODELS = (
                   name='feedforwad_nn_18_lrelu', dtype=DTYPE),
 )
 
-quadratic_features = list(itertools.combinations_with_replacement(FEATURES, 2))
-
 SOLVABLE_MODELS = (
-    LinearRegression(len(FEATURES) + len(quadratic_features), len(OUTPUTS),
-                     name='quadratic_regression', dtype=DTYPE),
+    PolynomialRegression(len(FEATURES), len(OUTPUTS), degree=2,
+                         name='quadratic_regression', dtype=DTYPE),
 )
 
 # Read data
@@ -51,30 +49,21 @@ train_labels = train_data[:, len(FEATURES):]
 test_inputs = test_data[:, :len(FEATURES)]
 test_labels = test_data[:, len(FEATURES):]
 
-# Each solvable model has to have associated it's own features
-# (due to polynomial regressions etc.). Make sure read data is
-# transformed appropriately and added to this array for each
-# of the solvable models as a tuples (train_data, test_data)
-data_for_solvables = [
-    (expand_to_polynomial(train_inputs, 2),
-     expand_to_polynomial(test_inputs, 2)),
-]
-
 # Start training
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     # Solve solvable models
     for i, model in enumerate(SOLVABLE_MODELS):
-        train_loss = model.calculate_average_distance(data_for_solvables[i][0],
+        train_loss = model.calculate_average_distance(train_inputs,
                                                       train_labels, sess)
-        test_loss = model.calculate_average_distance(data_for_solvables[i][1],
+        test_loss = model.calculate_average_distance(test_inputs,
                                                      test_labels, sess)
         print(f'Train distance with {model.name} before solving: {train_loss}')
         print(f'Test distance with {model.name} before solving: {test_loss}')
-        model.solve(data_for_solvables[i][0], train_labels, sess)
-        train_loss = model.calculate_average_distance(data_for_solvables[i][0],
+        model.solve(train_inputs, train_labels, sess)
+        train_loss = model.calculate_average_distance(train_inputs,
                                                       train_labels, sess)
-        test_loss = model.calculate_average_distance(data_for_solvables[i][1],
+        test_loss = model.calculate_average_distance(test_inputs,
                                                      test_labels, sess)
         print(f'Train distance with {model.name} after solving: {train_loss}')
         print(f'Test distance with {model.name} after solving: {test_loss}')

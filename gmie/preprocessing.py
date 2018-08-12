@@ -52,20 +52,19 @@ def get_test_train_data(data, test_size):
     return train_data, test_data
 
 
-def expand_to_polynomial(data, degree):
+def expand_to_polynomial(vector, degree):
     """
-    Expands given data to the polynomial degree of correlations
+    Expands given vector to the polynomial degree of correlations
     (e.g. ([x1, x2], 2) to [x1, x2, x1^2, x1*x2, x2^2]).
     """
-    expanded_data = [[] for _ in data]
+    expanded_data = []
     for d in range(1, degree+1):
-        for i, row in enumerate(data):
-            combinations = itertools.combinations_with_replacement(row, d)
-            polynomials = [reduce(operator.mul, combination)
-                           for combination in combinations]
-            expanded_data[i].extend(polynomials)
+        combinations = itertools.combinations_with_replacement(vector, d)
+        polynomials = [reduce(operator.mul, combination)
+                       for combination in combinations]
+        expanded_data.extend(polynomials)
 
-    return np.array(expanded_data)
+    return expanded_data
 
 
 def normalize_train_test_data(train, test):
