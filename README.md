@@ -13,4 +13,4 @@ and economic factors (e.g. trade deals or inflation) that are beyond the simple 
 
 To configure the training process change appropriate data and models configuration in the `config.py` file.
 
-To run the training for specified models and specified configuration simply run the `main.py` script.
+To run the training for specified models and specified configuration simply run the `train.py` script.
