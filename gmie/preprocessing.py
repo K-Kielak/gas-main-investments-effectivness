@@ -6,31 +6,37 @@ from functools import reduce
 import numpy as np
 
 
-def center_output_around(datasets, central_point_features):
+def relate_output_to(datasets, central_point_features):
     """
-    Subtracts the output value of the most central point from all
-    of the points for each dataset.
+    Relates the output value of all of the points to the value of
+    the most central point for each dataset.
+    related value = (value - central_value) / central_value
     :param datasets: key:dataset pairs (dict).
     :param central_point_features: Features defining the most central
     point for all datasets. Output of the point with features closest
-    to the central point will be used for subtraction in each dataset.
-    :return: The list of all centered datasets concatenated together.
+    to the central point will be used as a relation point in each dataset.
+    :return: The list of all related datasets concatenated together.
     """
     features_len = len(central_point_features)
-    centered_dataset = []
+    related_dataset = []
     for dset in datasets.values():
         features = [datapoint[:features_len] for datapoint in dset]
         outputs = [datapoint[features_len:] for datapoint in dset]
         most_central_point \
             = min(features, key=lambda x: distance(x, central_point_features))
+
         central_point_index = features.index(most_central_point)
         central_output = outputs[central_point_index]
-        centered_outputs = [list(map(operator.sub, out, central_output))
-                            for out in outputs]
-        centered_dset = [f + o for f, o in zip(features, centered_outputs)]
-        centered_dataset.extend(centered_dset)
 
-    return centered_dataset
+        outputs_difference = [(map(operator.sub, out, central_output))
+                              for out in outputs]
+        related_outputs = [list(map(lambda v, central_v: v / central_v,
+                                out, central_output))
+                           for out in outputs_difference]
+        related_dset = [f + o for f, o in zip(features, related_outputs)]
+        related_dataset.extend(related_dset)
+
+    return related_dataset
 
 
 def distance(xs, ys):
@@ -69,7 +75,8 @@ def expand_to_polynomial(vector, degree):
 
 def normalize_train_test_data(train, test):
     """
-    Normalizes 2 matrices of data, train and test
+    Normalizes 2 matrices of data, train and test within the [0:100]
+    range
     :param train: Train data (as numpy array), second axis
     (axis=1 in numpy) should correspond to separate features.
     :param test: Test data (as numpy array), second axis
@@ -79,7 +86,7 @@ def normalize_train_test_data(train, test):
     different normalization parameters and each row of normalization
     parameters consists of 2 variables:
     scale_coefficient and mean_change where
-    normalized_value = scale_coefficient*normalized_value - mean_change
+    normalized_value = scale_coefficient*value - mean_change
     (normalization parameters are decided purely based on the train
     data to avoid leaking any test information to the model)
     """
@@ -123,7 +130,10 @@ def normalize_data_vector(data, scale_coeff=None, mean_change=None):
     if scale_coeff is None:
         max_value = max(data)
         data_range = max_value - min_value
-        scale_coeff = 100 / data_range
+        if data_range == 0:
+            scale_coeff = 1
+        else:
+            scale_coeff = 100 / data_range
 
     if mean_change is None:
         mean_change = (min_value * scale_coeff)

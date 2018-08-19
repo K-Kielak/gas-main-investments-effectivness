@@ -16,10 +16,10 @@ DATA_PATH = os.path.join(PROJECT_ROOT, 'data.txt')
 CENTRAL_DATAPOINT = (700, 0, 0)
 # What features program should expect to find in the data file.
 FEATURES = ('Diameter', 'Model', '?')
-INPUT_SIZE = [len(FEATURES)]
+INPUT_SIZE = len(FEATURES)
 # What labels program should expect in case of training in the data file.
 OUTPUTS = ('Price',)
-OUTPUT_SIZE = [len(OUTPUTS)]
+OUTPUT_SIZE = len(OUTPUTS)
 
 # TRAINING CONFIG
 # What part of the data should be set aside for testing
@@ -36,7 +36,8 @@ SAVE_DIR = os.path.join(PROJECT_ROOT, 'saved-models')
 # MODELS CONFIG
 # Trainable models to use
 TRAINING_MODELS = (
-    FeedforwardNN(INPUT_SIZE + [18] + OUTPUT_SIZE, activation=tf.nn.leaky_relu,
+    FeedforwardNN([INPUT_SIZE] + [18] + [OUTPUT_SIZE],
+                  activation=tf.nn.leaky_relu,
                   name='feedforwad_nn_18_lrelu', dtype=DTYPE),
 )
 
