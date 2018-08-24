@@ -4,6 +4,12 @@ Research project looking into the effectiveness of gas main investments in Polan
 It consists of different machine learning models that calculate the expected prices of different types of gas mains
 relatively to the most standard model (see `config.py`) based on the provided training data.
 
+### Results
+You can see sample results for given data in the `results.ipynb` notebook. To be able to  fully experience the jupyter 
+notebook results view it in the nbviewer. I.e. go to
+https://nbviewer.jupyter.org/github/K-Kielak/gas-main-investments-effectivness/blob/master/results.ipynb
+
+
 ### Training models
 Data to train the models should consists of data collection year in the first column followed by features specified in 
 the config.py file. All features (and the year) should be in separate columns delimited by the semicolons. Each 
