@@ -15,7 +15,7 @@ DATA_PATH = os.path.join(PROJECT_ROOT, 'data.txt')
 # Towards what datapoint data for all dates should be centered around
 CENTRAL_DATAPOINT = (700, 0, 0)
 # What features program should expect to find in the data file.
-FEATURES = ('Diameter', 'Model', '?')
+FEATURES = ('Diameter', 'Model', 'Pressure')
 INPUT_SIZE = len(FEATURES)
 # What labels program should expect in case of training in the data file.
 OUTPUTS = ('Price',)
