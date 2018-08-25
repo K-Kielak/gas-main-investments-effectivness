@@ -2,6 +2,7 @@ absl-py==0.1.13
 astor==0.6.2
 backcall==0.1.0
 bleach==1.5.0
+cycler==0.10.0
 decorator==4.3.0
 entrypoints==0.2.3
 gast==0.2.0
@@ -10,13 +11,16 @@ html5lib==0.9999999
 ipykernel==4.8.2
 ipython==6.5.0
 ipython-genutils==0.2.0
+ipywidgets==7.4.0
 jedi==0.12.1
 Jinja2==2.10
 jsonschema==2.6.0
 jupyter-client==5.2.3
 jupyter-core==4.4.0
+kiwisolver==1.0.1
 Markdown==2.6.11
 MarkupSafe==1.0
+matplotlib==2.2.3
 mistune==0.8.3
 nbconvert==5.3.1
 nbformat==4.4.0
@@ -31,7 +35,9 @@ prompt-toolkit==1.0.15
 protobuf==3.5.2.post1
 ptyprocess==0.6.0
 Pygments==2.2.0
+pyparsing==2.2.0
 python-dateutil==2.7.3
+pytz==2018.5
 pyzmq==17.1.2
 Send2Trash==1.5.0
 simplegeneric==0.8.1
@@ -45,3 +51,4 @@ tornado==5.1
 traitlets==4.3.2
 wcwidth==0.1.7
 Werkzeug==0.14.1
+widgetsnbextension==3.4.0
