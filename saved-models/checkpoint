@@ -1,2 +1,2 @@
-model_checkpoint_path: "/home/kacper/Pulpit/Rozwoj/Science/KamratKielak/GMIE/gmie/../saved-models/quadratic_regression"
-all_model_checkpoint_paths: "/home/kacper/Pulpit/Rozwoj/Science/KamratKielak/GMIE/gmie/../saved-models/quadratic_regression"
+model_checkpoint_path: "/home/kacper/Pulpit/Rozwoj/Science/KamratKielak/GMIE/gmie/../saved-models/feedforwad_nn_18_lrelu"
+all_model_checkpoint_paths: "/home/kacper/Pulpit/Rozwoj/Science/KamratKielak/GMIE/gmie/../saved-models/feedforwad_nn_18_lrelu"

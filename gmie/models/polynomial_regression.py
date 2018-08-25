@@ -25,8 +25,8 @@ class PolynomialRegression(MLModel):
         self._average_distance = tf.reduce_mean(distances)
 
         # Calculate square error for training purposes
-        square_errors = tf.square(self._output - self._labels)
-        self._loss = tf.reduce_sum(square_errors)
+        self._square_errors = tf.square(self._output - self._labels)
+        self._loss = tf.reduce_sum(self._square_errors)
         self._train_step = tf.train.AdamOptimizer().minimize(self._loss)
 
     def train(self, inputs, labels, session):
@@ -50,6 +50,15 @@ class PolynomialRegression(MLModel):
         # assign solved parameters
         session.run(self._biases.assign(solved_biases))
         session.run(self._weights.assign(solved_weights))
+
+    def calculate_variance(self, inputs, labels, session):
+        variance = session.run(tf.reduce_mean(self._square_errors, axis=0),
+                               feed_dict={
+                self._inputs: self._prepare_data(inputs),
+                self._labels: labels
+            })
+
+        session.run(self._variance.assign(variance))
 
     def calculate_average_distance(self, inputs, labels, session):
         return session.run(self._average_distance, feed_dict={

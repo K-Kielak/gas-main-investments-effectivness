@@ -1,3 +1,4 @@
+import math
 from abc import ABC, abstractmethod
 
 import numpy as np
@@ -12,6 +13,7 @@ class MLModel(ABC):
         # Initialize norm params variables
         self._output_size = output_size
         with tf.name_scope(self.name):
+            self._variance = tf.Variable(np.ones(output_size), dtype=dtype)
             self._are_norm_params_set = tf.Variable(False, dtype=tf.bool)
             self._in_norm_params = tf.Variable([0], dtype=dtype,
                                                validate_shape=False)
@@ -27,6 +29,17 @@ class MLModel(ABC):
         raise NotImplementedError('Method train of the model not implemented')
 
     @abstractmethod
+    def calculate_variance(self, inputs, labels, session):
+        """
+        Calculates data variance. Regression models assume that data
+        is normally distributed. Assuming our model approximates
+        function f and properly fits the data, we can say data is
+        distributed as N(f, std^2), where std^2 (variance) is our SSE.
+        """
+        raise NotImplementedError('Method calculate_variance of '
+                                  'the model not implemented')
+
+    @abstractmethod
     def calculate_average_distance(self, inputs, labels, session):
         raise NotImplementedError('Method calculate_average_distance '
                                   'of the model not implemented')
@@ -35,6 +48,15 @@ class MLModel(ABC):
     def predict(self, inputs, session):
         raise NotImplementedError('Method predict of the '
                                   'model not implemented')
+
+    def get_variance(self, session):
+        return session.run(self._variance)
+
+    def get_denorm_variance(self, session):
+        variance = self.get_variance(session)
+        out_norm_params = session.run(self._out_norm_params)
+        return [var / (scale_coeff**2) for var, (scale_coeff, _)
+                in zip(variance, out_norm_params)]
 
     def normalize_inputs(self, inputs, sess):
         if not sess.run(self._are_norm_params_set):

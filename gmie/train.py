@@ -13,7 +13,7 @@ def main():
         prepare_data(datasets)
 
     # Set up saver for each model
-    models = TRAINING_MODELS + SOLVABLE_MODELS
+    models = SOLVABLE_MODELS + TRAINING_MODELS
     collections = [(model.name,
                     tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=model.name))
                    for model in models]
@@ -59,8 +59,12 @@ def main():
 
                 model.train(train_inputs, train_labels, sess)
 
-        # Save models
+        # Set useful model parameters
+        [m.calculate_variance(train_inputs, train_labels, sess)
+         for m in models]
         [m.set_norm_params(norm_parameters, sess) for m in models]
+
+        # Save models
         [s.save(sess, os.path.join(SAVE_DIR, name)) for name, s in savers]
 
 
