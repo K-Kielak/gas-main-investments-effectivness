@@ -6,8 +6,7 @@ relatively to the most standard model (see `config.py`) based on the provided tr
 
 ### Results
 You can see sample results for given data in the `results.ipynb` notebook. To be able to  fully experience the jupyter 
-notebook results view it in the nbviewer. I.e. go to
-https://nbviewer.jupyter.org/github/K-Kielak/gas-main-investments-effectivness/blob/master/results.ipynb
+notebook results view it on the local jupyter notebook or Google Collab.
 
 
 ### Training models
